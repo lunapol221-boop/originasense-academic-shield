@@ -1,24 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Download, Printer, FileText, Brain, Layers, Globe, AlertTriangle, CheckCircle2, Info } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ArrowLeft, Download, Printer, FileText, Brain, Layers, Globe, AlertTriangle, CheckCircle2, Info, Loader2 } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 
-const matchedSources = [
-  { source: "arxiv.org/abs/2024.12345", type: "Academic", similarity: 8, title: "Deep Learning Ethics: A Survey" },
-  { source: "nature.com/articles/s41586", type: "Journal", similarity: 5, title: "AI Transparency in Research" },
-  { source: "wikipedia.org/wiki/Machine_learning", type: "Web", similarity: 4, title: "Machine Learning - Wikipedia" },
-  { source: "student-archive/2025-S-0342", type: "Archive", similarity: 3, title: "Previous Submission: ML Ethics Paper" },
-];
-
-const documentSections = [
-  { text: "Machine learning algorithms have transformed the way we approach complex problems in virtually every domain of human activity.", highlight: null, aiSuspect: false },
-  { text: "The ethical implications of deploying autonomous systems in critical decision-making processes have been extensively studied by researchers worldwide.", highlight: "high", aiSuspect: true },
-  { text: "Our methodology employs a novel approach combining transformer architectures with reinforcement learning techniques to achieve state-of-the-art results.", highlight: null, aiSuspect: false },
-  { text: "Recent advances in natural language processing have demonstrated remarkable capabilities in understanding and generating human-like text with unprecedented fluency and coherence.", highlight: "medium", aiSuspect: true },
-  { text: "The experimental results clearly demonstrate that our proposed framework outperforms existing baseline methods across all evaluation metrics considered in this study.", highlight: "low", aiSuspect: false },
-  { text: "These findings suggest that careful consideration of bias mitigation strategies is essential when implementing AI systems in educational and healthcare settings.", highlight: null, aiSuspect: true },
-];
+type Submission = Tables<"submissions">;
+type MatchedSource = Tables<"matched_sources">;
 
 function CircularProgress({ value, size = 120, label, sublabel, color }: { value: number; size?: number; label: string; sublabel: string; color: string }) {
   const radius = (size - 12) / 2;
@@ -76,8 +65,35 @@ function ConfidenceBar({ label, value, color }: { label: string; value: number; 
   );
 }
 
+function getSublabel(score: number, type: "similarity" | "ai" | "paraphrase") {
+  if (type === "similarity") return score > 25 ? "High match rate" : score > 15 ? "Moderate match" : "Low match rate";
+  if (type === "ai") return score > 50 ? "High AI likelihood" : score > 20 ? "Moderate likelihood" : "Low AI likelihood";
+  return score > 25 ? "High paraphrase" : score > 10 ? "Some paraphrasing" : "Minimal suspicion";
+}
+
 export default function ReportPage() {
+  const { id } = useParams<{ id: string }>();
+  const [submission, setSubmission] = useState<Submission | null>(null);
+  const [sources, setSources] = useState<MatchedSource[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"originality" | "ai" | "paraphrase" | "sources">("originality");
+
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchReport = async () => {
+      const [subRes, srcRes] = await Promise.all([
+        supabase.from("submissions").select("*").eq("id", id).single(),
+        supabase.from("matched_sources").select("*").eq("submission_id", id).order("similarity_percentage", { ascending: false }),
+      ]);
+
+      if (subRes.data) setSubmission(subRes.data);
+      if (srcRes.data) setSources(srcRes.data);
+      setLoading(false);
+    };
+
+    fetchReport();
+  }, [id]);
 
   const tabs = [
     { id: "originality" as const, label: "Originality", icon: FileText },
@@ -85,6 +101,35 @@ export default function ReportPage() {
     { id: "paraphrase" as const, label: "Paraphrase", icon: Layers },
     { id: "sources" as const, label: "Sources", icon: Globe },
   ];
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="w-8 h-8 animate-spin text-accent" />
+      </div>
+    );
+  }
+
+  if (!submission) {
+    return (
+      <div className="text-center py-24">
+        <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+        <h2 className="font-display text-xl font-bold text-foreground mb-2">Report Not Found</h2>
+        <p className="text-muted-foreground text-sm mb-4">This submission doesn't exist or you don't have access.</p>
+        <Link to="/dashboard">
+          <Button variant="outline">Back to Dashboard</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  const similarity = submission.similarity_score ?? 0;
+  const aiScore = submission.ai_score ?? 0;
+  const paraphrase = submission.paraphrase_score ?? 0;
+
+  const formattedDate = new Date(submission.created_at).toLocaleDateString("en-US", {
+    month: "short", day: "numeric", year: "numeric",
+  });
 
   return (
     <div className="space-y-6">
@@ -95,27 +140,38 @@ export default function ReportPage() {
           </Link>
           <div>
             <h1 className="font-display text-xl font-bold text-foreground">Originality Report</h1>
-            <p className="text-muted-foreground text-sm">Research Paper - Machine Learning Ethics · Submitted Mar 24, 2026</p>
+            <p className="text-muted-foreground text-sm">{submission.title} · Submitted {formattedDate}</p>
           </div>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm"><Download className="w-4 h-4 mr-1.5" /> Export</Button>
-          <Button variant="outline" size="sm"><Printer className="w-4 h-4 mr-1.5" /> Print</Button>
+          <Button variant="outline" size="sm" onClick={() => window.print()}><Printer className="w-4 h-4 mr-1.5" /> Print</Button>
         </div>
       </div>
 
       {/* Score Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-panel rounded-xl p-6 flex justify-center">
-          <CircularProgress value={12} label="Similarity Score" sublabel="Low match rate" color="hsl(158 64% 40%)" />
+          <CircularProgress value={similarity} label="Similarity Score" sublabel={getSublabel(similarity, "similarity")} color="hsl(158 64% 40%)" />
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-panel rounded-xl p-6 flex justify-center">
-          <CircularProgress value={23} label="AI Probability" sublabel="Low AI likelihood" color="hsl(38 92% 50%)" />
+          <CircularProgress value={aiScore} label="AI Probability" sublabel={getSublabel(aiScore, "ai")} color="hsl(38 92% 50%)" />
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-panel rounded-xl p-6 flex justify-center">
-          <CircularProgress value={8} label="Paraphrase Score" sublabel="Minimal suspicion" color="hsl(217 91% 60%)" />
+          <CircularProgress value={paraphrase} label="Paraphrase Score" sublabel={getSublabel(paraphrase, "paraphrase")} color="hsl(217 91% 60%)" />
         </motion.div>
       </div>
+
+      {/* Status Banner */}
+      {submission.status === "queued" || submission.status === "processing" ? (
+        <div className="flex items-center gap-3 p-4 rounded-xl bg-warning/10 border border-warning/20">
+          <Loader2 className="w-5 h-5 text-warning animate-spin" />
+          <div>
+            <div className="text-sm font-medium text-foreground">Analysis in Progress</div>
+            <div className="text-xs text-muted-foreground">Your document is being processed. Scores will update automatically.</div>
+          </div>
+        </div>
+      ) : null}
 
       {/* Tabs */}
       <div className="flex gap-1 p-1 bg-muted rounded-lg w-fit">
@@ -136,49 +192,67 @@ export default function ReportPage() {
       {activeTab === "originality" && (
         <div className="grid lg:grid-cols-5 gap-6">
           <div className="lg:col-span-3 glass-panel rounded-xl p-6">
-            <h3 className="font-display font-semibold text-foreground mb-4">Document Content</h3>
-            <div className="space-y-3 text-sm leading-relaxed">
-              {documentSections.map((section, i) => (
-                <p
-                  key={i}
-                  className={`p-2 rounded-md transition-colors ${
-                    section.highlight === "high" ? "bg-destructive/10 border-l-2 border-destructive" :
-                    section.highlight === "medium" ? "bg-warning/10 border-l-2 border-warning" :
-                    section.highlight === "low" ? "bg-info/10 border-l-2 border-info" :
-                    "text-foreground"
-                  }`}
-                >
-                  {section.text}
-                </p>
-              ))}
+            <h3 className="font-display font-semibold text-foreground mb-4">Document Details</h3>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between py-2 border-b border-border">
+                <span className="text-muted-foreground">File Name</span>
+                <span className="text-foreground font-medium">{submission.file_name}</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-border">
+                <span className="text-muted-foreground">File Type</span>
+                <span className="text-foreground font-medium uppercase">{submission.file_type || "—"}</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-border">
+                <span className="text-muted-foreground">File Size</span>
+                <span className="text-foreground font-medium">
+                  {submission.file_size ? `${(submission.file_size / 1024).toFixed(0)} KB` : "—"}
+                </span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-border">
+                <span className="text-muted-foreground">Submitted</span>
+                <span className="text-foreground font-medium">{formattedDate}</span>
+              </div>
+              <div className="flex justify-between py-2">
+                <span className="text-muted-foreground">Status</span>
+                <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
+                  submission.status === "completed" ? "bg-success/10 text-success" :
+                  submission.status === "flagged" ? "bg-destructive/10 text-destructive" :
+                  "bg-warning/10 text-warning"
+                }`}>
+                  {submission.status === "review_pending" ? "Review Pending" : submission.status}
+                </span>
+              </div>
             </div>
           </div>
           <div className="lg:col-span-2 space-y-4">
-            <div className="glass-panel rounded-xl p-5">
-              <h3 className="font-display font-semibold text-foreground mb-4">Match Breakdown</h3>
-              <div className="space-y-4">
-                <ConfidenceBar label="Web Sources" value={4} color="hsl(217 91% 60%)" />
-                <ConfidenceBar label="Academic Papers" value={5} color="hsl(172 66% 40%)" />
-                <ConfidenceBar label="Student Archives" value={3} color="hsl(38 92% 50%)" />
-                <ConfidenceBar label="Journal Articles" value={0} color="hsl(280 67% 60%)" />
-              </div>
-            </div>
             <div className="glass-panel rounded-xl p-5">
               <h3 className="font-display font-semibold text-foreground mb-4 flex items-center gap-2">
                 <Info className="w-4 h-4 text-accent" /> Summary
               </h3>
               <div className="space-y-3 text-sm">
                 <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-success mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">Overall similarity is within acceptable range</span>
+                  {similarity <= 25 ? (
+                    <CheckCircle2 className="w-4 h-4 text-success mt-0.5 shrink-0" />
+                  ) : (
+                    <AlertTriangle className="w-4 h-4 text-warning mt-0.5 shrink-0" />
+                  )}
+                  <span className="text-muted-foreground">
+                    Similarity score is {similarity <= 25 ? "within acceptable range" : "above recommended threshold"}
+                  </span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <AlertTriangle className="w-4 h-4 text-warning mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">2 sections flagged for potential paraphrasing</span>
+                  {aiScore <= 30 ? (
+                    <CheckCircle2 className="w-4 h-4 text-success mt-0.5 shrink-0" />
+                  ) : (
+                    <AlertTriangle className="w-4 h-4 text-warning mt-0.5 shrink-0" />
+                  )}
+                  <span className="text-muted-foreground">
+                    AI detection shows {aiScore <= 30 ? "low" : aiScore <= 60 ? "moderate" : "high"} probability of generated content
+                  </span>
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-success mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">AI detection shows low probability of generated content</span>
+                  <span className="text-muted-foreground">{sources.length} matched source{sources.length !== 1 ? "s" : ""} identified</span>
                 </div>
               </div>
             </div>
@@ -189,34 +263,34 @@ export default function ReportPage() {
       {activeTab === "ai" && (
         <div className="grid lg:grid-cols-5 gap-6">
           <div className="lg:col-span-3 glass-panel rounded-xl p-6">
-            <h3 className="font-display font-semibold text-foreground mb-4">AI Detection Heatmap</h3>
-            <div className="space-y-3 text-sm leading-relaxed">
-              {documentSections.map((section, i) => (
-                <div key={i} className="flex gap-3">
-                  <div className={`w-1 rounded-full shrink-0 ${
-                    section.aiSuspect ? "bg-warning" : "bg-success"
-                  }`} />
-                  <p className="text-foreground">{section.text}</p>
-                </div>
-              ))}
+            <h3 className="font-display font-semibold text-foreground mb-4">AI Analysis</h3>
+            <div className="space-y-4">
+              <ConfidenceBar label="Human-written likelihood" value={Math.max(0, 100 - aiScore)} color="hsl(158 64% 40%)" />
+              <ConfidenceBar label="AI-generated probability" value={aiScore} color="hsl(38 92% 50%)" />
             </div>
           </div>
-          <div className="lg:col-span-2 space-y-4">
-            <div className="glass-panel rounded-xl p-5">
-              <h3 className="font-display font-semibold text-foreground mb-4">AI Analysis</h3>
-              <div className="space-y-4">
-                <ConfidenceBar label="Human-written likelihood" value={77} color="hsl(158 64% 40%)" />
-                <ConfidenceBar label="AI-generated probability" value={23} color="hsl(38 92% 50%)" />
-                <ConfidenceBar label="Mixed content probability" value={15} color="hsl(217 91% 60%)" />
-              </div>
-            </div>
+          <div className="lg:col-span-2">
             <div className="glass-panel rounded-xl p-5">
               <h3 className="font-display font-semibold text-foreground mb-3">Detection Verdict</h3>
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-success/10 border border-success/20">
-                <CheckCircle2 className="w-5 h-5 text-success" />
+              <div className={`flex items-center gap-3 p-3 rounded-lg border ${
+                aiScore <= 30 ? "bg-success/10 border-success/20" :
+                aiScore <= 60 ? "bg-warning/10 border-warning/20" :
+                "bg-destructive/10 border-destructive/20"
+              }`}>
+                {aiScore <= 30 ? (
+                  <CheckCircle2 className="w-5 h-5 text-success" />
+                ) : (
+                  <AlertTriangle className="w-5 h-5 text-warning" />
+                )}
                 <div>
-                  <div className="text-sm font-medium text-foreground">Low AI Likelihood</div>
-                  <div className="text-xs text-muted-foreground">Content appears primarily human-written</div>
+                  <div className="text-sm font-medium text-foreground">
+                    {submission.ai_likelihood ? submission.ai_likelihood.charAt(0).toUpperCase() + submission.ai_likelihood.slice(1) : aiScore <= 30 ? "Low" : aiScore <= 60 ? "Moderate" : "High"} AI Likelihood
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {aiScore <= 30 ? "Content appears primarily human-written" :
+                     aiScore <= 60 ? "Some sections may contain AI-generated content" :
+                     "Content likely contains significant AI-generated portions"}
+                  </div>
                 </div>
               </div>
             </div>
@@ -227,27 +301,16 @@ export default function ReportPage() {
       {activeTab === "paraphrase" && (
         <div className="glass-panel rounded-xl p-6">
           <h3 className="font-display font-semibold text-foreground mb-4">Paraphrase Analysis</h3>
-          <p className="text-sm text-muted-foreground mb-6">
-            Semantic analysis of text patterns that may indicate paraphrased content from known sources.
-          </p>
           <div className="space-y-4">
-            {documentSections.filter((s) => s.highlight).map((section, i) => (
-              <div key={i} className="p-4 rounded-lg border border-border bg-muted/30">
-                <div className="flex items-start gap-3">
-                  <div className={`px-2 py-0.5 rounded text-xs font-medium mt-0.5 ${
-                    section.highlight === "high" ? "bg-destructive/10 text-destructive" :
-                    section.highlight === "medium" ? "bg-warning/10 text-warning" : "bg-info/10 text-info"
-                  }`}>
-                    {section.highlight} match
-                  </div>
-                  <div>
-                    <p className="text-sm text-foreground mb-2">{section.text}</p>
-                    <p className="text-xs text-muted-foreground">Similar patterns found in academic databases — semantic similarity detected</p>
-                  </div>
-                </div>
-              </div>
-            ))}
+            <ConfidenceBar label="Paraphrase Score" value={paraphrase} color="hsl(217 91% 60%)" />
           </div>
+          <p className="text-sm text-muted-foreground mt-6">
+            {paraphrase <= 10
+              ? "No significant paraphrasing patterns detected in this document."
+              : paraphrase <= 30
+              ? "Some paraphrasing patterns detected. Review matched sources for details."
+              : "Significant paraphrasing patterns detected. Manual review recommended."}
+          </p>
         </div>
       )}
 
@@ -255,33 +318,40 @@ export default function ReportPage() {
         <div className="glass-panel rounded-xl overflow-hidden">
           <div className="p-5 border-b border-border">
             <h3 className="font-display font-semibold text-foreground">Matched Sources</h3>
-            <p className="text-sm text-muted-foreground mt-1">{matchedSources.length} sources identified</p>
+            <p className="text-sm text-muted-foreground mt-1">{sources.length} source{sources.length !== 1 ? "s" : ""} identified</p>
           </div>
-          <div className="divide-y divide-border">
-            {matchedSources.map((source, i) => (
-              <div key={i} className="p-5 flex items-center justify-between hover:bg-muted/30 transition-colors">
-                <div className="flex items-center gap-4">
-                  <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center">
-                    <Globe className="w-4 h-4 text-accent" />
+          {sources.length === 0 ? (
+            <div className="text-center py-12">
+              <Globe className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+              <p className="text-muted-foreground text-sm">No matched sources found</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-border">
+              {sources.map((source) => (
+                <div key={source.id} className="p-5 flex items-center justify-between hover:bg-muted/30 transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center">
+                      <Globe className="w-4 h-4 text-accent" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-foreground">{source.source_title}</div>
+                      <div className="text-xs text-muted-foreground">{source.source_url || "—"}</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-sm font-medium text-foreground">{source.title}</div>
-                    <div className="text-xs text-muted-foreground">{source.source}</div>
+                  <div className="flex items-center gap-4">
+                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
+                      source.source_type === "academic" ? "bg-accent/10 text-accent" :
+                      source.source_type === "journal" ? "bg-info/10 text-info" :
+                      source.source_type === "web" ? "bg-warning/10 text-warning" : "bg-muted text-muted-foreground"
+                    }`}>
+                      {source.source_type}
+                    </span>
+                    <span className="text-sm font-medium text-foreground">{source.similarity_percentage}%</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    source.type === "Academic" ? "bg-accent/10 text-accent" :
-                    source.type === "Journal" ? "bg-info/10 text-info" :
-                    source.type === "Web" ? "bg-warning/10 text-warning" : "bg-muted text-muted-foreground"
-                  }`}>
-                    {source.type}
-                  </span>
-                  <span className="text-sm font-medium text-foreground">{source.similarity}%</span>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

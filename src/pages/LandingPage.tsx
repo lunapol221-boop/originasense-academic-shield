@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Shield, Brain, FileSearch, BarChart3, Users, Zap,
@@ -7,6 +7,7 @@ import {
   Lock, Layers, BookOpen, Sparkles
 } from "lucide-react";
 import { LandingNav } from "@/components/LandingNav";
+import { useEffect } from "react";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -18,8 +19,7 @@ const fadeUp = {
 
 function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden" style={{ background: "var(--gradient-hero)" }}>
-      {/* Ambient glow */}
+    <section id="hero" className="relative min-h-screen flex items-center overflow-hidden" style={{ background: "var(--gradient-hero)" }}>
       <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-20 blur-[120px]" style={{ background: "hsl(172 66% 40%)" }} />
       <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full opacity-10 blur-[100px]" style={{ background: "hsl(217 91% 60%)" }} />
 
@@ -31,11 +31,7 @@ function HeroSection() {
             </span>
           </motion.div>
 
-          <motion.h1
-            custom={1}
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
+          <motion.h1 custom={1} variants={fadeUp} initial="hidden" animate="visible"
             className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6"
             style={{ color: "hsl(210 40% 98%)" }}
           >
@@ -44,11 +40,7 @@ function HeroSection() {
             <span className="gradient-text">Originality</span> at Scale
           </motion.h1>
 
-          <motion.p
-            custom={2}
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
+          <motion.p custom={2} variants={fadeUp} initial="hidden" animate="visible"
             className="text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed"
             style={{ color: "hsl(215 20% 65%)" }}
           >
@@ -62,11 +54,11 @@ function HeroSection() {
                 Start Free Trial <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </Link>
-            <Link to="/features">
+            <a href="#features">
               <Button size="lg" variant="outline" className="border-border/30 h-12 text-base hover:bg-muted/10" style={{ color: "hsl(215 20% 75%)" }}>
                 Explore Features
               </Button>
-            </Link>
+            </a>
           </motion.div>
 
           <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="mt-16">
@@ -102,14 +94,9 @@ const features = [
 
 function FeaturesSection() {
   return (
-    <section className="py-24 bg-background relative">
+    <section id="features" className="py-24 bg-background relative scroll-mt-16">
       <div className="container mx-auto px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
           <span className="text-accent text-sm font-medium uppercase tracking-widest">Platform Capabilities</span>
           <h2 className="font-display text-3xl md:text-4xl font-bold mt-3 text-foreground">
             Everything You Need for Academic Integrity
@@ -121,13 +108,7 @@ function FeaturesSection() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, i) => (
-            <motion.div
-              key={feature.title}
-              custom={i}
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
+            <motion.div key={feature.title} custom={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
               className="group glass-panel rounded-xl p-6 hover:shadow-glow transition-all duration-300 cursor-default"
             >
               <div className="w-11 h-11 rounded-lg bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
@@ -161,15 +142,7 @@ function WorkflowSection() {
 
         <div className="grid md:grid-cols-4 gap-8 max-w-5xl mx-auto">
           {steps.map((step, i) => (
-            <motion.div
-              key={step.step}
-              custom={i}
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="text-center"
-            >
+            <motion.div key={step.step} custom={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center">
               <div className="font-display text-4xl font-bold gradient-text mb-4">{step.step}</div>
               <h3 className="font-display font-semibold text-foreground mb-2">{step.title}</h3>
               <p className="text-muted-foreground text-sm">{step.desc}</p>
@@ -189,7 +162,7 @@ const plans = [
 
 function PricingSection() {
   return (
-    <section className="py-24 bg-background">
+    <section id="pricing" className="py-24 bg-background scroll-mt-16">
       <div className="container mx-auto px-6">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
           <span className="text-accent text-sm font-medium uppercase tracking-widest">Pricing</span>
@@ -198,13 +171,7 @@ function PricingSection() {
 
         <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {plans.map((plan, i) => (
-            <motion.div
-              key={plan.name}
-              custom={i}
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
+            <motion.div key={plan.name} custom={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
               className={`glass-panel rounded-xl p-6 relative ${plan.popular ? "ring-2 ring-accent shadow-glow" : ""}`}
             >
               {plan.popular && (
@@ -224,9 +191,11 @@ function PricingSection() {
                   </li>
                 ))}
               </ul>
-              <Button className={`w-full ${plan.popular ? "bg-accent text-accent-foreground hover:bg-accent/90" : ""}`} variant={plan.popular ? "default" : "outline"}>
-                {plan.price === "Custom" ? "Contact Sales" : "Start Free Trial"}
-              </Button>
+              <Link to="/register">
+                <Button className={`w-full ${plan.popular ? "bg-accent text-accent-foreground hover:bg-accent/90" : ""}`} variant={plan.popular ? "default" : "outline"}>
+                  {plan.price === "Custom" ? "Contact Sales" : "Start Free Trial"}
+                </Button>
+              </Link>
             </motion.div>
           ))}
         </div>
@@ -237,13 +206,13 @@ function PricingSection() {
 
 function TestimonialsSection() {
   const testimonials = [
-    { name: "Dr. Emily Foster", role: "Dean of Academic Affairs", school: "MIT", quote: "OriginaSense Nexus transformed how we handle academic integrity across 30+ departments." },
-    { name: "Prof. David Kim", role: "Computer Science Chair", school: "Stanford", quote: "The AI detection capabilities are remarkably accurate. Our faculty trust the results completely." },
-    { name: "Sarah Johnson", role: "Academic Integrity Officer", school: "Oxford", quote: "The multi-institution management and analytics are exactly what large universities need." },
+    { name: "Dr. Angela Rivera", role: "Dean of Academic Affairs", school: "Westlake University", quote: "OriginaSense Nexus transformed how we handle academic integrity across 30+ departments. The AI detection alone saved us hundreds of hours." },
+    { name: "Prof. Michael Tanaka", role: "Computer Science Chair", school: "Meridian Institute of Technology", quote: "The AI detection capabilities are remarkably accurate. Our faculty trust the results and the reporting is incredibly detailed." },
+    { name: "Sarah Lindqvist", role: "Academic Integrity Officer", school: "Northern Atlantic University", quote: "The multi-institution management and analytics dashboards are exactly what large research universities need." },
   ];
 
   return (
-    <section className="py-24 bg-muted/30">
+    <section id="about" className="py-24 bg-muted/30 scroll-mt-16">
       <div className="container mx-auto px-6">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
           <span className="text-accent text-sm font-medium uppercase tracking-widest">Trusted By Leaders</span>
@@ -271,7 +240,7 @@ function TestimonialsSection() {
 
 function CTASection() {
   return (
-    <section className="py-24 relative overflow-hidden" style={{ background: "var(--gradient-hero)" }}>
+    <section id="contact" className="py-24 relative overflow-hidden scroll-mt-16" style={{ background: "var(--gradient-hero)" }}>
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-10 blur-[150px]" style={{ background: "hsl(172 66% 40%)" }} />
       <div className="container mx-auto px-6 relative z-10 text-center">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
@@ -309,16 +278,20 @@ function Footer() {
             </p>
           </div>
           {[
-            { title: "Product", links: ["Features", "Pricing", "Integrations", "Changelog"] },
-            { title: "Company", links: ["About", "Careers", "Blog", "Contact"] },
-            { title: "Resources", links: ["Documentation", "API Reference", "Support", "Status"] },
+            { title: "Product", links: [{ label: "Features", href: "#features" }, { label: "Pricing", href: "#pricing" }, { label: "Get Started", href: "/register" }] },
+            { title: "Company", links: [{ label: "About", href: "#about" }, { label: "Contact", href: "#contact" }] },
+            { title: "Legal", links: [{ label: "Privacy Policy", href: "#" }, { label: "Terms of Service", href: "#" }] },
           ].map((col) => (
             <div key={col.title}>
               <h4 className="font-display font-semibold text-foreground mb-4 text-sm">{col.title}</h4>
               <ul className="space-y-2.5">
                 {col.links.map((link) => (
-                  <li key={link}>
-                    <a href="#" className="text-muted-foreground text-sm hover:text-accent transition-colors">{link}</a>
+                  <li key={link.label}>
+                    {link.href.startsWith("/") ? (
+                      <Link to={link.href} className="text-muted-foreground text-sm hover:text-accent transition-colors">{link.label}</Link>
+                    ) : (
+                      <a href={link.href} className="text-muted-foreground text-sm hover:text-accent transition-colors">{link.label}</a>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -327,11 +300,6 @@ function Footer() {
         </div>
         <div className="border-t border-border pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-muted-foreground text-xs">© 2026 OriginaSense Nexus. All rights reserved.</p>
-          <div className="flex gap-6">
-            {["Privacy", "Terms", "Cookies"].map((l) => (
-              <a key={l} href="#" className="text-muted-foreground text-xs hover:text-accent transition-colors">{l}</a>
-            ))}
-          </div>
         </div>
       </div>
     </footer>
@@ -339,6 +307,24 @@ function Footer() {
 }
 
 export default function LandingPage() {
+  const location = useLocation();
+
+  // Scroll to section based on route
+  useEffect(() => {
+    const sectionMap: Record<string, string> = {
+      "/features": "features",
+      "/pricing": "pricing",
+      "/about": "about",
+      "/contact": "contact",
+    };
+    const sectionId = sectionMap[location.pathname];
+    if (sectionId) {
+      setTimeout(() => {
+        document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+  }, [location.pathname]);
+
   return (
     <div className="min-h-screen">
       <LandingNav />
