@@ -57,10 +57,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const navItems = roleNavItems[user?.role || "student"] || [];
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await signOut();
     navigate("/");
   };
+
+  const displayName = user?.profile?.full_name || user?.email || "User";
 
   return (
     <div className="min-h-screen flex bg-background">
