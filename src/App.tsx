@@ -16,13 +16,33 @@ import SuperAdminDashboard from "@/pages/dashboards/SuperAdminDashboard";
 import SubmitPage from "@/pages/SubmitPage";
 import ReportPage from "@/pages/ReportPage";
 import NotFound from "@/pages/NotFound";
+import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient();
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-accent" />
+      </div>
+    );
+  }
+
   if (!isAuthenticated) return <Navigate to="/login" />;
   return <DashboardLayout>{children}</DashboardLayout>;
+}
+
+function RoleDashboard() {
+  const { user } = useAuth();
+  switch (user?.role) {
+    case "teacher": return <TeacherDashboard />;
+    case "school_admin": return <SchoolAdminDashboard />;
+    case "super_admin": return <SuperAdminDashboard />;
+    default: return <StudentDashboard />;
+  }
 }
 
 function AppRoutes() {
@@ -36,7 +56,7 @@ function AppRoutes() {
       <Route path="/about" element={<LandingPage />} />
       <Route path="/contact" element={<LandingPage />} />
 
-      <Route path="/dashboard" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
+      <Route path="/dashboard" element={<ProtectedRoute><RoleDashboard /></ProtectedRoute>} />
       <Route path="/dashboard/submit" element={<ProtectedRoute><SubmitPage /></ProtectedRoute>} />
       <Route path="/dashboard/submissions" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
       <Route path="/dashboard/reports" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
