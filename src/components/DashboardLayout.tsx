@@ -132,7 +132,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </button>
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent font-medium text-sm">
-                {user?.name?.charAt(0) || "U"}
+                {displayName.charAt(0)}
               </div>
               {user && (
                 <div className="hidden sm:block">
