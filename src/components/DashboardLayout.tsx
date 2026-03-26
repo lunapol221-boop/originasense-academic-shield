@@ -136,7 +136,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
               {user && (
                 <div className="hidden sm:block">
-                  <div className="text-sm font-medium text-foreground">{user.name}</div>
+                  <div className="text-sm font-medium text-foreground">{displayName}</div>
                   <div className="text-xs text-muted-foreground capitalize">{user.role.replace("_", " ")}</div>
                 </div>
               )}

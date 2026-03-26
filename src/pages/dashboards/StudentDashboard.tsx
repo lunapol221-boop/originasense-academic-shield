@@ -56,7 +56,7 @@ export default function StudentDashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-2xl font-bold text-foreground">Welcome back, {user?.name?.split(" ")[0]}</h1>
+          <h1 className="font-display text-2xl font-bold text-foreground">Welcome back, {user?.profile?.full_name?.split(" ")[0] || "there"}</h1>
           <p className="text-muted-foreground text-sm mt-1">Here's your submission overview</p>
         </div>
         <Link to="/dashboard/submit">
