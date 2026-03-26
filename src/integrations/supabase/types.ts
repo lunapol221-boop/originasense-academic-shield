@@ -14,16 +14,400 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          id: string
+          target: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          target?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          target?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      departments: {
+        Row: {
+          created_at: string
+          id: string
+          institution_id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          institution_id: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          institution_id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "departments_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      institution_themes: {
+        Row: {
+          accent_color: string
+          created_at: string
+          font_family: string | null
+          id: string
+          institution_id: string
+          secondary_color: string | null
+          updated_at: string
+        }
+        Insert: {
+          accent_color?: string
+          created_at?: string
+          font_family?: string | null
+          id?: string
+          institution_id: string
+          secondary_color?: string | null
+          updated_at?: string
+        }
+        Update: {
+          accent_color?: string
+          created_at?: string
+          font_family?: string | null
+          id?: string
+          institution_id?: string
+          secondary_color?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "institution_themes_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: true
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      institutions: {
+        Row: {
+          ai_threshold: number
+          created_at: string
+          domain: string | null
+          id: string
+          is_active: boolean
+          logo_url: string | null
+          name: string
+          plan: string
+          similarity_threshold: number
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          ai_threshold?: number
+          created_at?: string
+          domain?: string | null
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name: string
+          plan?: string
+          similarity_threshold?: number
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          ai_threshold?: number
+          created_at?: string
+          domain?: string | null
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name?: string
+          plan?: string
+          similarity_threshold?: number
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      matched_sources: {
+        Row: {
+          created_at: string
+          id: string
+          matched_text: string | null
+          similarity_percentage: number
+          source_title: string
+          source_type: string
+          source_url: string | null
+          submission_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          matched_text?: string | null
+          similarity_percentage?: number
+          source_title: string
+          source_type?: string
+          source_url?: string | null
+          submission_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          matched_text?: string | null
+          similarity_percentage?: number
+          source_title?: string
+          source_type?: string
+          source_url?: string | null
+          submission_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "matched_sources_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          link: string | null
+          message: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          message?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          message?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          department: string | null
+          full_name: string | null
+          id: string
+          institution_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          department?: string | null
+          full_name?: string | null
+          id?: string
+          institution_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          department?: string | null
+          full_name?: string | null
+          id?: string
+          institution_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reviewer_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          reviewer_id: string
+          submission_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          reviewer_id: string
+          submission_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          reviewer_id?: string
+          submission_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviewer_comments_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      submissions: {
+        Row: {
+          ai_likelihood: Database["public"]["Enums"]["ai_likelihood"] | null
+          ai_score: number | null
+          assigned_reviewer: string | null
+          batch_id: string | null
+          created_at: string
+          file_name: string
+          file_size: number | null
+          file_type: string | null
+          file_url: string | null
+          id: string
+          institution_id: string | null
+          paraphrase_score: number | null
+          similarity_score: number | null
+          status: Database["public"]["Enums"]["submission_status"]
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_likelihood?: Database["public"]["Enums"]["ai_likelihood"] | null
+          ai_score?: number | null
+          assigned_reviewer?: string | null
+          batch_id?: string | null
+          created_at?: string
+          file_name: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string | null
+          id?: string
+          institution_id?: string | null
+          paraphrase_score?: number | null
+          similarity_score?: number | null
+          status?: Database["public"]["Enums"]["submission_status"]
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_likelihood?: Database["public"]["Enums"]["ai_likelihood"] | null
+          ai_score?: number | null
+          assigned_reviewer?: string | null
+          batch_id?: string | null
+          created_at?: string
+          file_name?: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string | null
+          id?: string
+          institution_id?: string | null
+          paraphrase_score?: number | null
+          similarity_score?: number | null
+          status?: Database["public"]["Enums"]["submission_status"]
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submissions_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_institution: { Args: { _user_id: string }; Returns: string }
+      get_user_role: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      ai_likelihood: "low" | "moderate" | "high"
+      app_role: "super_admin" | "school_admin" | "teacher" | "student"
+      submission_status:
+        | "queued"
+        | "processing"
+        | "completed"
+        | "flagged"
+        | "review_pending"
+        | "failed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +534,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      ai_likelihood: ["low", "moderate", "high"],
+      app_role: ["super_admin", "school_admin", "teacher", "student"],
+      submission_status: [
+        "queued",
+        "processing",
+        "completed",
+        "flagged",
+        "review_pending",
+        "failed",
+      ],
+    },
   },
 } as const

@@ -49,7 +49,7 @@ const roleNavItems: Record<string, NavItem[]> = {
 };
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user, logout } = useAuth();
+  const { user, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
@@ -57,10 +57,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const navItems = roleNavItems[user?.role || "student"] || [];
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await signOut();
     navigate("/");
   };
+
+  const displayName = user?.profile?.full_name || user?.email || "User";
 
   return (
     <div className="min-h-screen flex bg-background">
@@ -130,11 +132,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </button>
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent font-medium text-sm">
-                {user?.name?.charAt(0) || "U"}
+                {displayName.charAt(0)}
               </div>
               {user && (
                 <div className="hidden sm:block">
-                  <div className="text-sm font-medium text-foreground">{user.name}</div>
+                  <div className="text-sm font-medium text-foreground">{displayName}</div>
                   <div className="text-xs text-muted-foreground capitalize">{user.role.replace("_", " ")}</div>
                 </div>
               )}
