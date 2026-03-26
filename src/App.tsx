@@ -15,6 +15,7 @@ import SchoolAdminDashboard from "@/pages/dashboards/SchoolAdminDashboard";
 import SuperAdminDashboard from "@/pages/dashboards/SuperAdminDashboard";
 import SubmitPage from "@/pages/SubmitPage";
 import ReportPage from "@/pages/ReportPage";
+import SettingsPage from "@/pages/SettingsPage";
 import NotFound from "@/pages/NotFound";
 import { Loader2 } from "lucide-react";
 
@@ -35,12 +36,12 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <DashboardLayout>{children}</DashboardLayout>;
 }
 
-function RoleDashboard() {
+function RoleDashboardRedirect() {
   const { user } = useAuth();
   switch (user?.role) {
-    case "teacher": return <TeacherDashboard />;
-    case "school_admin": return <SchoolAdminDashboard />;
-    case "super_admin": return <SuperAdminDashboard />;
+    case "teacher": return <Navigate to="/dashboard/teacher" replace />;
+    case "school_admin": return <Navigate to="/dashboard/school-admin" replace />;
+    case "super_admin": return <Navigate to="/dashboard/super-admin" replace />;
     default: return <StudentDashboard />;
   }
 }
@@ -56,19 +57,23 @@ function AppRoutes() {
       <Route path="/about" element={<LandingPage />} />
       <Route path="/contact" element={<LandingPage />} />
 
-      <Route path="/dashboard" element={<ProtectedRoute><RoleDashboard /></ProtectedRoute>} />
+      {/* Student routes */}
+      <Route path="/dashboard" element={<ProtectedRoute><RoleDashboardRedirect /></ProtectedRoute>} />
       <Route path="/dashboard/submit" element={<ProtectedRoute><SubmitPage /></ProtectedRoute>} />
       <Route path="/dashboard/submissions" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
       <Route path="/dashboard/reports" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
       <Route path="/dashboard/report/:id" element={<ProtectedRoute><ReportPage /></ProtectedRoute>} />
-      <Route path="/dashboard/settings" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
+      <Route path="/dashboard/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
 
+      {/* Teacher routes */}
       <Route path="/dashboard/teacher" element={<ProtectedRoute><TeacherDashboard /></ProtectedRoute>} />
       <Route path="/dashboard/teacher/*" element={<ProtectedRoute><TeacherDashboard /></ProtectedRoute>} />
 
+      {/* School admin routes */}
       <Route path="/dashboard/school-admin" element={<ProtectedRoute><SchoolAdminDashboard /></ProtectedRoute>} />
       <Route path="/dashboard/school-admin/*" element={<ProtectedRoute><SchoolAdminDashboard /></ProtectedRoute>} />
 
+      {/* Super admin routes */}
       <Route path="/dashboard/super-admin" element={<ProtectedRoute><SuperAdminDashboard /></ProtectedRoute>} />
       <Route path="/dashboard/super-admin/*" element={<ProtectedRoute><SuperAdminDashboard /></ProtectedRoute>} />
 
