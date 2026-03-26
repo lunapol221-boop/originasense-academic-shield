@@ -29,8 +29,8 @@ export default function RegisterPage() {
     if (error) {
       toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Account created!", description: "Check your email for a confirmation link." });
-      navigate("/dashboard");
+      toast({ title: "Account created!", description: "Please check your email for a confirmation link before signing in." });
+      navigate("/login");
     }
   };
 

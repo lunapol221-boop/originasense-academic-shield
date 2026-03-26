@@ -17,6 +17,23 @@ export function LandingNav() {
     { label: "Contact", href: "/contact" },
   ];
 
+  const handleNavClick = (href: string) => {
+    setMobileOpen(false);
+    // If already on landing page, scroll to section
+    if (location.pathname === "/" || location.pathname === href) {
+      const sectionMap: Record<string, string> = {
+        "/features": "features",
+        "/pricing": "pricing",
+        "/about": "about",
+        "/contact": "contact",
+      };
+      const sectionId = sectionMap[href];
+      if (sectionId) {
+        document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
   return (
     <motion.nav
       initial={{ y: -20, opacity: 0 }}
@@ -38,6 +55,7 @@ export function LandingNav() {
             <Link
               key={link.href}
               to={link.href}
+              onClick={() => handleNavClick(link.href)}
               className={`text-sm font-medium transition-colors hover:text-accent ${
                 location.pathname === link.href ? "text-accent" : "text-muted-foreground"
               }`}
@@ -81,7 +99,7 @@ export function LandingNav() {
               <Link
                 key={link.href}
                 to={link.href}
-                onClick={() => setMobileOpen(false)}
+                onClick={() => handleNavClick(link.href)}
                 className="text-sm font-medium text-muted-foreground hover:text-accent py-2"
               >
                 {link.label}
