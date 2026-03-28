@@ -90,9 +90,21 @@ export default function ReportPage() {
       if (subRes.data) setSubmission(subRes.data);
       if (srcRes.data) setSources(srcRes.data);
       setLoading(false);
+      return subRes.data;
     };
 
-    fetchReport();
+    fetchReport().then((sub) => {
+      // Poll if still processing
+      if (sub && (sub.status === "queued" || sub.status === "processing")) {
+        const interval = setInterval(async () => {
+          const result = await fetchReport();
+          if (result && result.status !== "queued" && result.status !== "processing") {
+            clearInterval(interval);
+          }
+        }, 3000);
+        return () => clearInterval(interval);
+      }
+    });
   }, [id]);
 
   const tabs = [
