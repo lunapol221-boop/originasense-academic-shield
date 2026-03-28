@@ -64,6 +64,25 @@ export default function SubmitPage() {
       if (insertError) throw insertError;
 
       updateFile(item.id, {
+        status: "processing",
+        progress: 80,
+        submissionId: data.id,
+      });
+
+      // Trigger AI analysis
+      try {
+        const { error: analyzeError } = await supabase.functions.invoke("analyze-document", {
+          body: { submission_id: data.id },
+        });
+        if (analyzeError) {
+          console.warn("Analysis error:", analyzeError);
+          toast.warning(`${item.file.name} uploaded but analysis failed. You can retry later.`);
+        }
+      } catch (analyzeErr) {
+        console.warn("Analysis invocation failed:", analyzeErr);
+      }
+
+      updateFile(item.id, {
         status: "completed",
         progress: 100,
         submissionId: data.id,
