@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, ArrowLeft, Loader2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -15,7 +15,6 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const { signIn, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +22,7 @@ export default function LoginPage() {
     const { error } = await signIn(email, password);
     setLoading(false);
     if (error) {
-      toast({ title: "Sign in failed", description: error.message, variant: "destructive" });
+      toast.error(error.message || "Sign in failed");
     } else {
       navigate("/dashboard");
     }
@@ -34,7 +33,7 @@ export default function LoginPage() {
     const { error } = await signInWithGoogle();
     setLoading(false);
     if (error) {
-      toast({ title: "Google sign in failed", description: error.message, variant: "destructive" });
+      toast.error(error.message || "Google sign in failed");
     }
   };
 
