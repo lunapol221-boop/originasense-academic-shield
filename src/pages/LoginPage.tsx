@@ -22,7 +22,7 @@ export default function LoginPage() {
     const { error } = await signIn(email, password);
     setLoading(false);
     if (error) {
-      toast({ title: "Sign in failed", description: error.message, variant: "destructive" });
+      toast.error(error.message || "Sign in failed");
     } else {
       navigate("/dashboard");
     }
