@@ -33,7 +33,7 @@ export default function LoginPage() {
     const { error } = await signInWithGoogle();
     setLoading(false);
     if (error) {
-      toast({ title: "Google sign in failed", description: error.message, variant: "destructive" });
+      toast.error(error.message || "Google sign in failed");
     }
   };
 
