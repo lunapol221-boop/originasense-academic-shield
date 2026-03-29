@@ -255,6 +255,26 @@ You must call the analyze_document function with your assessment.`,
                       type: "string",
                       description: "2-3 sentence summary explaining the key findings and why the scores are what they are",
                     },
+                    perplexity_score: {
+                      type: "number",
+                      description: "Text perplexity score 0-100. Higher = more unpredictable/human-like. Human writing: 60-95. AI text: 10-40.",
+                    },
+                    burstiness_score: {
+                      type: "number",
+                      description: "Burstiness index 0-100. Higher = more varied sentence complexity (human). Low = uniform (AI). Human: 55-90. AI: 10-35.",
+                    },
+                    sentence_variance: {
+                      type: "number",
+                      description: "Sentence length variance 0-100. Higher = more varied lengths (human). Low = consistent lengths (AI). Human: 50-85. AI: 10-30.",
+                    },
+                    vocabulary_richness: {
+                      type: "number",
+                      description: "Type-token ratio scaled 0-100. Higher = more diverse vocabulary. Human: 55-85. AI: 30-55.",
+                    },
+                    consistency_score: {
+                      type: "number",
+                      description: "Writing style consistency 0-100. Very high (85+) suggests AI. Mixed styles (40-70) suggest human or patchwork.",
+                    },
                     matched_sources: {
                       type: "array",
                       items: {
@@ -288,6 +308,11 @@ You must call the analyze_document function with your assessment.`,
                     "ai_likelihood",
                     "status",
                     "analysis_summary",
+                    "perplexity_score",
+                    "burstiness_score",
+                    "sentence_variance",
+                    "vocabulary_richness",
+                    "consistency_score",
                     "matched_sources",
                   ],
                   additionalProperties: false,
