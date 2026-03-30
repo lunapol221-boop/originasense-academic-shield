@@ -53,7 +53,7 @@ function AppRoutes() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/features" element={<LandingPage />} />
-      <Route path="/pricing" element={<LandingPage />} />
+      <Route path="/pricing" element={<Navigate to="/" replace />} />
       <Route path="/about" element={<LandingPage />} />
       <Route path="/contact" element={<LandingPage />} />
 

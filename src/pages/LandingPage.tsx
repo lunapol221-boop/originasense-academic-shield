@@ -2,9 +2,8 @@ import { motion } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
-  Shield, Brain, FileSearch, BarChart3, Users, Zap,
-  ArrowRight, CheckCircle2, ChevronRight, Star, Globe,
-  Lock, Layers, BookOpen, Sparkles
+  Shield, Brain, FileSearch, BarChart3, Users,
+  ArrowRight, ChevronRight, Star, Layers, Sparkles
 } from "lucide-react";
 import { LandingNav } from "@/components/LandingNav";
 import { useEffect } from "react";
@@ -59,23 +58,6 @@ function HeroSection() {
                 Explore Features
               </Button>
             </a>
-          </motion.div>
-
-          <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="mt-16">
-            <div className="glass-panel-dark rounded-2xl p-6 md:p-8 max-w-3xl mx-auto border border-border/20">
-              <div className="grid grid-cols-3 gap-6 text-center">
-                {[
-                  { value: "99.7%", label: "Detection Accuracy" },
-                  { value: "500+", label: "Institutions Trust Us" },
-                  { value: "<2s", label: "Avg Processing Time" },
-                ].map((stat) => (
-                  <div key={stat.label}>
-                    <div className="font-display text-2xl md:text-3xl font-bold gradient-text">{stat.value}</div>
-                    <div className="text-xs md:text-sm mt-1" style={{ color: "hsl(215 20% 55%)" }}>{stat.label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </motion.div>
         </div>
       </div>
@@ -146,56 +128,6 @@ function WorkflowSection() {
               <div className="font-display text-4xl font-bold gradient-text mb-4">{step.step}</div>
               <h3 className="font-display font-semibold text-foreground mb-2">{step.title}</h3>
               <p className="text-muted-foreground text-sm">{step.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-const plans = [
-  { name: "Starter", price: "$49", period: "/mo", features: ["Up to 500 submissions/mo", "Similarity detection", "Basic analytics", "1 institution", "Email support"], popular: false },
-  { name: "Professional", price: "$149", period: "/mo", features: ["Up to 5,000 submissions/mo", "AI writing detection", "Paraphrase detection", "Advanced analytics", "5 institutions", "Priority support"], popular: true },
-  { name: "Enterprise", price: "Custom", period: "", features: ["Unlimited submissions", "All detection modules", "Custom integrations", "Unlimited institutions", "Dedicated success manager", "SLA guarantee"], popular: false },
-];
-
-function PricingSection() {
-  return (
-    <section id="pricing" className="py-24 bg-background scroll-mt-16">
-      <div className="container mx-auto px-6">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
-          <span className="text-accent text-sm font-medium uppercase tracking-widest">Pricing</span>
-          <h2 className="font-display text-3xl md:text-4xl font-bold mt-3 text-foreground">Plans for Every Institution</h2>
-        </motion.div>
-
-        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {plans.map((plan, i) => (
-            <motion.div key={plan.name} custom={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-              className={`glass-panel rounded-xl p-6 relative ${plan.popular ? "ring-2 ring-accent shadow-glow" : ""}`}
-            >
-              {plan.popular && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-xs font-medium px-3 py-1 rounded-full">
-                  Most Popular
-                </span>
-              )}
-              <h3 className="font-display font-semibold text-lg text-foreground">{plan.name}</h3>
-              <div className="mt-4 mb-6">
-                <span className="font-display text-4xl font-bold text-foreground">{plan.price}</span>
-                <span className="text-muted-foreground text-sm">{plan.period}</span>
-              </div>
-              <ul className="space-y-3 mb-8">
-                {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-muted-foreground">
-                    <CheckCircle2 className="w-4 h-4 text-accent mt-0.5 shrink-0" /> {f}
-                  </li>
-                ))}
-              </ul>
-              <Link to="/register">
-                <Button className={`w-full ${plan.popular ? "bg-accent text-accent-foreground hover:bg-accent/90" : ""}`} variant={plan.popular ? "default" : "outline"}>
-                  {plan.price === "Custom" ? "Contact Sales" : "Start Free Trial"}
-                </Button>
-              </Link>
             </motion.div>
           ))}
         </div>
@@ -278,7 +210,7 @@ function Footer() {
             </p>
           </div>
           {[
-            { title: "Product", links: [{ label: "Features", href: "#features" }, { label: "Pricing", href: "#pricing" }, { label: "Get Started", href: "/register" }] },
+            { title: "Product", links: [{ label: "Features", href: "#features" }, { label: "Get Started", href: "/register" }] },
             { title: "Company", links: [{ label: "About", href: "#about" }, { label: "Contact", href: "#contact" }] },
             { title: "Legal", links: [{ label: "Privacy Policy", href: "#" }, { label: "Terms of Service", href: "#" }] },
           ].map((col) => (
@@ -313,7 +245,6 @@ export default function LandingPage() {
   useEffect(() => {
     const sectionMap: Record<string, string> = {
       "/features": "features",
-      "/pricing": "pricing",
       "/about": "about",
       "/contact": "contact",
     };
@@ -331,7 +262,6 @@ export default function LandingPage() {
       <HeroSection />
       <FeaturesSection />
       <WorkflowSection />
-      <PricingSection />
       <TestimonialsSection />
       <CTASection />
       <Footer />

@@ -67,53 +67,71 @@ async function fetchUserData(supabaseUser: User): Promise<AuthUser> {
   };
 }
 
+async function fetchUserDataWithRetry(supabaseUser: User, attempts = 3): Promise<AuthUser> {
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      return await fetchUserData(supabaseUser);
+    } catch (error) {
+      lastError = error;
+      if (attempt < attempts - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 200 * (attempt + 1)));
+      }
+    }
+  }
+
+  throw lastError instanceof Error ? lastError : new Error("Unable to load user data");
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthReady, setIsAuthReady] = useState(false);
 
   const loadUser = useCallback(async (supabaseUser: User | null) => {
+    if (!isAuthReady) return;
+
     if (!supabaseUser) {
       setUser(null);
       setIsLoading(false);
       return;
     }
+
+    setIsLoading(true);
+
     try {
-      const userData = await fetchUserData(supabaseUser);
+      const userData = await fetchUserDataWithRetry(supabaseUser);
       setUser(userData);
     } catch {
       setUser(null);
+      await supabase.auth.signOut();
+      setSession(null);
     }
+
     setIsLoading(false);
-  }, []);
+  }, [isAuthReady]);
 
   useEffect(() => {
-    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, newSession) => {
+      (_event, newSession) => {
         setSession(newSession);
-        if (newSession?.user) {
-          // Use setTimeout to avoid Supabase deadlock
-          setTimeout(() => loadUser(newSession.user), 0);
-        } else {
-          setUser(null);
-          setIsLoading(false);
-        }
       }
     );
 
-    // THEN get initial session
     supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
       setSession(initialSession);
-      if (initialSession?.user) {
-        loadUser(initialSession.user);
-      } else {
-        setIsLoading(false);
-      }
+      setIsAuthReady(true);
     });
 
     return () => subscription.unsubscribe();
-  }, [loadUser]);
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthReady) return;
+    void loadUser(session?.user ?? null);
+  }, [isAuthReady, loadUser, session]);
 
   const signUp = async (email: string, password: string, fullName: string) => {
     const { error } = await supabase.auth.signUp({
