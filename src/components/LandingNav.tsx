@@ -12,7 +12,6 @@ export function LandingNav() {
 
   const links = [
     { label: "Features", href: "/features" },
-    { label: "Pricing", href: "/pricing" },
     { label: "About", href: "/about" },
     { label: "Contact", href: "/contact" },
   ];
@@ -23,7 +22,6 @@ export function LandingNav() {
     if (location.pathname === "/" || location.pathname === href) {
       const sectionMap: Record<string, string> = {
         "/features": "features",
-        "/pricing": "pricing",
         "/about": "about",
         "/contact": "contact",
       };
