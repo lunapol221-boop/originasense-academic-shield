@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Shield, Brain, FileSearch, BarChart3, Users,
-  ArrowRight, ChevronRight, Star, Layers, Sparkles
+  ArrowRight, ChevronRight, Layers, Sparkles
 } from "lucide-react";
 import { LandingNav } from "@/components/LandingNav";
 import { useEffect } from "react";
@@ -136,32 +136,46 @@ function WorkflowSection() {
   );
 }
 
-function TestimonialsSection() {
-  const testimonials = [
-    { name: "Dr. Angela Rivera", role: "Dean of Academic Affairs", school: "Westlake University", quote: "OriginaSense Nexus transformed how we handle academic integrity across 30+ departments. The AI detection alone saved us hundreds of hours." },
-    { name: "Prof. Michael Tanaka", role: "Computer Science Chair", school: "Meridian Institute of Technology", quote: "The AI detection capabilities are remarkably accurate. Our faculty trust the results and the reporting is incredibly detailed." },
-    { name: "Sarah Lindqvist", role: "Academic Integrity Officer", school: "Northern Atlantic University", quote: "The multi-institution management and analytics dashboards are exactly what large research universities need." },
+function AboutSection() {
+  const team = [
+    { name: "Engr. Paul Arvy Alfonso", role: "Lead Developer" },
+    { name: "Dr. Julius Carl Beringuel", role: "Research Advisor" },
+    { name: "Dr. Allan Conde", role: "Technical Advisor" },
   ];
 
   return (
-    <section id="about" className="py-24 bg-muted/30 scroll-mt-16">
+    <section id="about" className="py-24 bg-background scroll-mt-16">
       <div className="container mx-auto px-6">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
-          <span className="text-accent text-sm font-medium uppercase tracking-widest">Trusted By Leaders</span>
-          <h2 className="font-display text-3xl md:text-4xl font-bold mt-3 text-foreground">What Educators Say</h2>
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
+          <span className="text-accent text-sm font-medium uppercase tracking-widest">About The Platform</span>
+          <h2 className="font-display text-3xl md:text-4xl font-bold mt-3 text-foreground">Our Mission</h2>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {testimonials.map((t, i) => (
-            <motion.div key={t.name} custom={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="glass-panel rounded-xl p-6">
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, j) => <Star key={j} className="w-4 h-4 fill-warning text-warning" />)}
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+          className="max-w-3xl mx-auto glass-panel rounded-2xl p-8 md:p-10 mb-16"
+        >
+          <p className="text-muted-foreground leading-relaxed mb-4">
+            This website is a content analysis platform designed to evaluate the originality and authenticity of written material. It utilizes advanced technology to detect AI-generated content, identify plagiarism, and analyze paraphrased text with accuracy and reliability.
+          </p>
+          <p className="text-muted-foreground leading-relaxed">
+            The platform aims to support academic integrity and responsible writing by providing users with a dependable tool for content verification.
+          </p>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-10">
+          <h3 className="font-display text-2xl font-bold text-foreground">Development Team</h3>
+        </motion.div>
+
+        <div className="grid sm:grid-cols-3 gap-8 max-w-3xl mx-auto">
+          {team.map((member, i) => (
+            <motion.div key={member.name} custom={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+              className="flex flex-col items-center text-center"
+            >
+              <div className="w-28 h-28 rounded-full bg-muted border-2 border-accent/30 flex items-center justify-center mb-4 overflow-hidden">
+                <Users className="w-10 h-10 text-muted-foreground/50" />
               </div>
-              <p className="text-muted-foreground text-sm mb-6 italic leading-relaxed">"{t.quote}"</p>
-              <div>
-                <div className="font-medium text-foreground text-sm">{t.name}</div>
-                <div className="text-xs text-muted-foreground">{t.role}, {t.school}</div>
-              </div>
+              <h4 className="font-display font-semibold text-foreground text-sm">{member.name}</h4>
+              <p className="text-muted-foreground text-xs mt-1">{member.role}</p>
             </motion.div>
           ))}
         </div>
@@ -262,7 +276,7 @@ export default function LandingPage() {
       <HeroSection />
       <FeaturesSection />
       <WorkflowSection />
-      <TestimonialsSection />
+      <AboutSection />
       <CTASection />
       <Footer />
     </div>
