@@ -7,6 +7,7 @@ import {
   BookOpen, Flag, History, Layers
 } from "lucide-react";
 import { useState } from "react";
+import { getRoleLabel } from "@/lib/roleLabels";
 
 interface NavItem {
   label: string;
