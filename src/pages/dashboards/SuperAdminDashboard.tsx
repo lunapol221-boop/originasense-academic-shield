@@ -38,7 +38,7 @@ export default function SuperAdminDashboard() {
         const userIds = [...new Set(subRes.data.map((s) => s.user_id))];
         const { data: profiles } = await supabase.from("profiles").select("user_id, full_name").in("user_id", userIds);
         const profileMap = new Map(profiles?.map((p) => [p.user_id, p.full_name]) || []);
-        setSubmissions(subRes.data.map((s) => ({ ...s, student_name: profileMap.get(s.user_id) || "Unknown" })));
+        setSubmissions(subRes.data.map((s) => ({ ...s, faculty_name: profileMap.get(s.user_id) || "Unknown" })));
       }
       if (auditRes.data) setAuditLogs(auditRes.data);
 
