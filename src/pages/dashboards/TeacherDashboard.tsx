@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Submission = Tables<"submissions">;
-type EnrichedSubmission = Submission & { student_name?: string };
+type EnrichedSubmission = Submission & { faculty_name?: string };
 
 function useTeacherData(user: ReturnType<typeof useAuth>["user"]) {
   const [submissions, setSubmissions] = useState<EnrichedSubmission[]>([]);
@@ -30,7 +30,7 @@ function useTeacherData(user: ReturnType<typeof useAuth>["user"]) {
           .select("user_id, full_name")
           .in("user_id", userIds);
         const profileMap = new Map(profiles?.map((p) => [p.user_id, p.full_name]) || []);
-        setSubmissions(data.map((s) => ({ ...s, student_name: profileMap.get(s.user_id) || "Unknown Student" })));
+        setSubmissions(data.map((s) => ({ ...s, faculty_name: profileMap.get(s.user_id) || "Unknown Faculty" })));
       }
       setLoading(false);
     };
@@ -68,7 +68,7 @@ function SubmissionTable({ submissions, title, emptyMessage, navigate }: {
         <table className="w-full">
           <thead>
             <tr className="border-b border-border">
-              <th className="text-left text-xs font-medium text-muted-foreground px-5 py-3">Student</th>
+              <th className="text-left text-xs font-medium text-muted-foreground px-5 py-3">Faculty</th>
               <th className="text-left text-xs font-medium text-muted-foreground px-5 py-3">Document</th>
               <th className="text-center text-xs font-medium text-muted-foreground px-5 py-3">Similarity</th>
               <th className="text-center text-xs font-medium text-muted-foreground px-5 py-3">AI Score</th>
@@ -78,7 +78,7 @@ function SubmissionTable({ submissions, title, emptyMessage, navigate }: {
           <tbody className="divide-y divide-border">
             {submissions.map((r) => (
               <tr key={r.id} className="hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => navigate(`/dashboard/report/${r.id}`)}>
-                <td className="px-5 py-4 text-sm font-medium text-foreground">{r.student_name}</td>
+                <td className="px-5 py-4 text-sm font-medium text-foreground">{r.faculty_name}</td>
                 <td className="px-5 py-4 text-sm text-muted-foreground">{r.title}</td>
                 <td className="px-5 py-4 text-center">
                   <span className={`text-sm font-medium ${(r.similarity_score || 0) > 25 ? "text-destructive" : (r.similarity_score || 0) > 15 ? "text-warning" : "text-success"}`}>
@@ -129,7 +129,7 @@ export default function TeacherDashboard() {
   const stats = [
     { icon: BookOpen, label: "Review Queue", value: String(reviewQueue.length) },
     { icon: Flag, label: "Flagged Submissions", value: String(flagged.length) },
-    { icon: Users, label: "Active Students", value: String(uniqueStudents) },
+    { icon: Users, label: "Active Faculty", value: String(uniqueStudents) },
     { icon: BarChart3, label: "Avg. Similarity", value: `${avgSimilarity}%` },
   ];
 

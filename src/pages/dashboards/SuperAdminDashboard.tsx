@@ -5,6 +5,7 @@ import { Building2, Users, FileText, AlertTriangle, Loader2, ArrowLeft, History,
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import { getRoleLabel } from "@/lib/roleLabels";
 
 type Submission = Tables<"submissions">;
 
@@ -15,7 +16,7 @@ export default function SuperAdminDashboard() {
   const [institutions, setInstitutions] = useState<{ id: string; name: string; plan: string; is_active: boolean; slug: string }[]>([]);
   const [allUsers, setAllUsers] = useState<{ id: string; user_id: string; full_name: string | null; institution_id: string | null; department: string | null }[]>([]);
   const [userRoles, setUserRoles] = useState<Map<string, string>>(new Map());
-  const [submissions, setSubmissions] = useState<(Submission & { student_name?: string })[]>([]);
+  const [submissions, setSubmissions] = useState<(Submission & { faculty_name?: string })[]>([]);
   const [auditLogs, setAuditLogs] = useState<{ action: string; target: string | null; created_at: string }[]>([]);
 
   useEffect(() => {
@@ -38,7 +39,7 @@ export default function SuperAdminDashboard() {
         const userIds = [...new Set(subRes.data.map((s) => s.user_id))];
         const { data: profiles } = await supabase.from("profiles").select("user_id, full_name").in("user_id", userIds);
         const profileMap = new Map(profiles?.map((p) => [p.user_id, p.full_name]) || []);
-        setSubmissions(subRes.data.map((s) => ({ ...s, student_name: profileMap.get(s.user_id) || "Unknown" })));
+        setSubmissions(subRes.data.map((s) => ({ ...s, faculty_name: profileMap.get(s.user_id) || "Unknown" })));
       }
       if (auditRes.data) setAuditLogs(auditRes.data);
 
@@ -143,7 +144,7 @@ export default function SuperAdminDashboard() {
                     <td className="px-5 py-4 text-sm font-medium text-foreground">{u.full_name || "Unnamed"}</td>
                     <td className="px-5 py-4 text-sm text-muted-foreground">{u.institution_id ? instMap.get(u.institution_id) || "—" : "—"}</td>
                     <td className="px-5 py-4 text-sm text-muted-foreground">{u.department || "—"}</td>
-                    <td className="px-5 py-4"><span className="px-2.5 py-0.5 rounded-full text-xs font-medium capitalize bg-accent/10 text-accent">{(userRoles.get(u.user_id) || "student").replace("_", " ")}</span></td>
+                    <td className="px-5 py-4"><span className="px-2.5 py-0.5 rounded-full text-xs font-medium capitalize bg-accent/10 text-accent">{getRoleLabel(userRoles.get(u.user_id) || "student")}</span></td>
                   </tr>
                 ))}
               </tbody>

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import { getRoleLabel } from "@/lib/roleLabels";
 
 type Submission = Tables<"submissions">;
 
@@ -15,7 +16,7 @@ export default function SchoolAdminDashboard() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [totalUsers, setTotalUsers] = useState(0);
-  const [submissions, setSubmissions] = useState<(Submission & { student_name?: string })[]>([]);
+  const [submissions, setSubmissions] = useState<(Submission & { faculty_name?: string })[]>([]);
   const [flaggedCount, setFlaggedCount] = useState(0);
   const [avgSimilarity, setAvgSimilarity] = useState(0);
   const [departments, setDepartments] = useState<{ name: string; id: string }[]>([]);
@@ -51,11 +52,11 @@ export default function SchoolAdminDashboard() {
         if (withScores.length > 0) {
           setAvgSimilarity(Math.round(withScores.reduce((a, s) => a + (s.similarity_score || 0), 0) / withScores.length));
         }
-        // Enrich with student names
+        // Enrich with faculty names
         const userIds = [...new Set(subs.map((s) => s.user_id))];
         const { data: profiles } = await supabase.from("profiles").select("user_id, full_name").in("user_id", userIds);
         const profileMap = new Map(profiles?.map((p) => [p.user_id, p.full_name]) || []);
-        setSubmissions(subs.map((s) => ({ ...s, student_name: profileMap.get(s.user_id) || "Unknown" })));
+        setSubmissions(subs.map((s) => ({ ...s, faculty_name: profileMap.get(s.user_id) || "Unknown" })));
       }
 
       // Fetch users at institution
@@ -121,7 +122,7 @@ export default function SchoolAdminDashboard() {
                     <tr key={u.id} className="hover:bg-muted/30 transition-colors">
                       <td className="px-5 py-4 text-sm font-medium text-foreground">{u.full_name || "Unnamed"}</td>
                       <td className="px-5 py-4 text-sm text-muted-foreground">{u.department || "—"}</td>
-                      <td className="px-5 py-4"><span className="px-2.5 py-0.5 rounded-full text-xs font-medium capitalize bg-accent/10 text-accent">{(userRoles.get(u.user_id) || "student").replace("_", " ")}</span></td>
+                      <td className="px-5 py-4"><span className="px-2.5 py-0.5 rounded-full text-xs font-medium capitalize bg-accent/10 text-accent">{getRoleLabel(userRoles.get(u.user_id) || "student")}</span></td>
                     </tr>
                   ))}
                 </tbody>
@@ -148,7 +149,7 @@ export default function SchoolAdminDashboard() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead><tr className="border-b border-border">
-                  <th className="text-left text-xs font-medium text-muted-foreground px-5 py-3">Student</th>
+                  <th className="text-left text-xs font-medium text-muted-foreground px-5 py-3">Faculty</th>
                   <th className="text-left text-xs font-medium text-muted-foreground px-5 py-3">Document</th>
                   <th className="text-center text-xs font-medium text-muted-foreground px-5 py-3">Similarity</th>
                   <th className="text-center text-xs font-medium text-muted-foreground px-5 py-3">Status</th>
@@ -156,7 +157,7 @@ export default function SchoolAdminDashboard() {
                 <tbody className="divide-y divide-border">
                   {submissions.map((s) => (
                     <tr key={s.id} className="hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => navigate(`/dashboard/report/${s.id}`)}>
-                      <td className="px-5 py-4 text-sm font-medium text-foreground">{s.student_name}</td>
+                      <td className="px-5 py-4 text-sm font-medium text-foreground">{s.faculty_name}</td>
                       <td className="px-5 py-4 text-sm text-muted-foreground">{s.title}</td>
                       <td className="px-5 py-4 text-center"><span className={`text-sm font-medium ${(s.similarity_score || 0) > 25 ? "text-destructive" : "text-success"}`}>{s.similarity_score !== null ? `${s.similarity_score}%` : "—"}</span></td>
                       <td className="px-5 py-4 text-center">

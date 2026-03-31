@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getRoleLabel } from "@/lib/roleLabels";
 
 export default function SettingsPage() {
   const { user } = useAuth();
@@ -90,7 +91,7 @@ export default function SettingsPage() {
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">Role</span>
-            <span className="text-foreground capitalize font-medium">{user?.role?.replace("_", " ")}</span>
+            <span className="text-foreground font-medium">{getRoleLabel(user?.role || "student")}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">User ID</span>

@@ -57,7 +57,7 @@ function AppRoutes() {
       <Route path="/about" element={<LandingPage />} />
       <Route path="/contact" element={<LandingPage />} />
 
-      {/* Student routes */}
+      {/* Faculty routes */}
       <Route path="/dashboard" element={<ProtectedRoute><RoleDashboardRedirect /></ProtectedRoute>} />
       <Route path="/dashboard/submit" element={<ProtectedRoute><SubmitPage /></ProtectedRoute>} />
       <Route path="/dashboard/submissions" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />

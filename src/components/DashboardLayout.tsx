@@ -7,6 +7,7 @@ import {
   BookOpen, Flag, History, Layers
 } from "lucide-react";
 import { useState } from "react";
+import { getRoleLabel } from "@/lib/roleLabels";
 
 interface NavItem {
   label: string;
@@ -137,7 +138,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {user && (
                 <div className="hidden sm:block">
                   <div className="text-sm font-medium text-foreground">{displayName}</div>
-                  <div className="text-xs text-muted-foreground capitalize">{user.role.replace("_", " ")}</div>
+                  <div className="text-xs text-muted-foreground">{getRoleLabel(user.role)}</div>
                 </div>
               )}
             </div>
