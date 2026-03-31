@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Submission = Tables<"submissions">;
-type EnrichedSubmission = Submission & { student_name?: string };
+type EnrichedSubmission = Submission & { faculty_name?: string };
 
 function useTeacherData(user: ReturnType<typeof useAuth>["user"]) {
   const [submissions, setSubmissions] = useState<EnrichedSubmission[]>([]);
