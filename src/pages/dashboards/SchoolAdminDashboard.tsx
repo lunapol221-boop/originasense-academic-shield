@@ -15,7 +15,7 @@ export default function SchoolAdminDashboard() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [totalUsers, setTotalUsers] = useState(0);
-  const [submissions, setSubmissions] = useState<(Submission & { student_name?: string })[]>([]);
+  const [submissions, setSubmissions] = useState<(Submission & { faculty_name?: string })[]>([]);
   const [flaggedCount, setFlaggedCount] = useState(0);
   const [avgSimilarity, setAvgSimilarity] = useState(0);
   const [departments, setDepartments] = useState<{ name: string; id: string }[]>([]);
