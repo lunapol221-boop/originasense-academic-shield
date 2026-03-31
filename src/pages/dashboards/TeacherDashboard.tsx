@@ -78,7 +78,7 @@ function SubmissionTable({ submissions, title, emptyMessage, navigate }: {
           <tbody className="divide-y divide-border">
             {submissions.map((r) => (
               <tr key={r.id} className="hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => navigate(`/dashboard/report/${r.id}`)}>
-                <td className="px-5 py-4 text-sm font-medium text-foreground">{r.student_name}</td>
+                <td className="px-5 py-4 text-sm font-medium text-foreground">{r.faculty_name}</td>
                 <td className="px-5 py-4 text-sm text-muted-foreground">{r.title}</td>
                 <td className="px-5 py-4 text-center">
                   <span className={`text-sm font-medium ${(r.similarity_score || 0) > 25 ? "text-destructive" : (r.similarity_score || 0) > 15 ? "text-warning" : "text-success"}`}>
