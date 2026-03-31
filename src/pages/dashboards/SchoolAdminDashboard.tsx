@@ -148,7 +148,7 @@ export default function SchoolAdminDashboard() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead><tr className="border-b border-border">
-                  <th className="text-left text-xs font-medium text-muted-foreground px-5 py-3">Student</th>
+                  <th className="text-left text-xs font-medium text-muted-foreground px-5 py-3">Faculty</th>
                   <th className="text-left text-xs font-medium text-muted-foreground px-5 py-3">Document</th>
                   <th className="text-center text-xs font-medium text-muted-foreground px-5 py-3">Similarity</th>
                   <th className="text-center text-xs font-medium text-muted-foreground px-5 py-3">Status</th>
