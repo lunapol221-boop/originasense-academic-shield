@@ -30,7 +30,7 @@ function useTeacherData(user: ReturnType<typeof useAuth>["user"]) {
           .select("user_id, full_name")
           .in("user_id", userIds);
         const profileMap = new Map(profiles?.map((p) => [p.user_id, p.full_name]) || []);
-        setSubmissions(data.map((s) => ({ ...s, student_name: profileMap.get(s.user_id) || "Unknown Student" })));
+        setSubmissions(data.map((s) => ({ ...s, faculty_name: profileMap.get(s.user_id) || "Unknown Faculty" })));
       }
       setLoading(false);
     };
