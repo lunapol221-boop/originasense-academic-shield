@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getRoleLabel } from "@/lib/roleLabels";
 
 export default function SettingsPage() {
   const { user } = useAuth();

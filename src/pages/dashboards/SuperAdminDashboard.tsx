@@ -5,6 +5,7 @@ import { Building2, Users, FileText, AlertTriangle, Loader2, ArrowLeft, History,
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import { getRoleLabel } from "@/lib/roleLabels";
 
 type Submission = Tables<"submissions">;
 
