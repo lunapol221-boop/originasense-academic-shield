@@ -15,7 +15,7 @@ export default function SuperAdminDashboard() {
   const [institutions, setInstitutions] = useState<{ id: string; name: string; plan: string; is_active: boolean; slug: string }[]>([]);
   const [allUsers, setAllUsers] = useState<{ id: string; user_id: string; full_name: string | null; institution_id: string | null; department: string | null }[]>([]);
   const [userRoles, setUserRoles] = useState<Map<string, string>>(new Map());
-  const [submissions, setSubmissions] = useState<(Submission & { student_name?: string })[]>([]);
+  const [submissions, setSubmissions] = useState<(Submission & { faculty_name?: string })[]>([]);
   const [auditLogs, setAuditLogs] = useState<{ action: string; target: string | null; created_at: string }[]>([]);
 
   useEffect(() => {
