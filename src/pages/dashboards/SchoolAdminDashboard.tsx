@@ -51,11 +51,11 @@ export default function SchoolAdminDashboard() {
         if (withScores.length > 0) {
           setAvgSimilarity(Math.round(withScores.reduce((a, s) => a + (s.similarity_score || 0), 0) / withScores.length));
         }
-        // Enrich with student names
+        // Enrich with faculty names
         const userIds = [...new Set(subs.map((s) => s.user_id))];
         const { data: profiles } = await supabase.from("profiles").select("user_id, full_name").in("user_id", userIds);
         const profileMap = new Map(profiles?.map((p) => [p.user_id, p.full_name]) || []);
-        setSubmissions(subs.map((s) => ({ ...s, student_name: profileMap.get(s.user_id) || "Unknown" })));
+        setSubmissions(subs.map((s) => ({ ...s, faculty_name: profileMap.get(s.user_id) || "Unknown" })));
       }
 
       // Fetch users at institution
