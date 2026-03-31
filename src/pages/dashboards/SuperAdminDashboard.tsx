@@ -143,7 +143,7 @@ export default function SuperAdminDashboard() {
                     <td className="px-5 py-4 text-sm font-medium text-foreground">{u.full_name || "Unnamed"}</td>
                     <td className="px-5 py-4 text-sm text-muted-foreground">{u.institution_id ? instMap.get(u.institution_id) || "—" : "—"}</td>
                     <td className="px-5 py-4 text-sm text-muted-foreground">{u.department || "—"}</td>
-                    <td className="px-5 py-4"><span className="px-2.5 py-0.5 rounded-full text-xs font-medium capitalize bg-accent/10 text-accent">{(userRoles.get(u.user_id) || "student").replace("_", " ")}</span></td>
+                    <td className="px-5 py-4"><span className="px-2.5 py-0.5 rounded-full text-xs font-medium capitalize bg-accent/10 text-accent">{getRoleLabel(userRoles.get(u.user_id) || "student")}</span></td>
                   </tr>
                 ))}
               </tbody>

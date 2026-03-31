@@ -156,7 +156,7 @@ export default function SchoolAdminDashboard() {
                 <tbody className="divide-y divide-border">
                   {submissions.map((s) => (
                     <tr key={s.id} className="hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => navigate(`/dashboard/report/${s.id}`)}>
-                      <td className="px-5 py-4 text-sm font-medium text-foreground">{s.student_name}</td>
+                      <td className="px-5 py-4 text-sm font-medium text-foreground">{s.faculty_name}</td>
                       <td className="px-5 py-4 text-sm text-muted-foreground">{s.title}</td>
                       <td className="px-5 py-4 text-center"><span className={`text-sm font-medium ${(s.similarity_score || 0) > 25 ? "text-destructive" : "text-success"}`}>{s.similarity_score !== null ? `${s.similarity_score}%` : "—"}</span></td>
                       <td className="px-5 py-4 text-center">
