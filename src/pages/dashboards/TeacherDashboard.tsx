@@ -129,7 +129,7 @@ export default function TeacherDashboard() {
   const stats = [
     { icon: BookOpen, label: "Review Queue", value: String(reviewQueue.length) },
     { icon: Flag, label: "Flagged Submissions", value: String(flagged.length) },
-    { icon: Users, label: "Active Students", value: String(uniqueStudents) },
+    { icon: Users, label: "Active Faculty", value: String(uniqueStudents) },
     { icon: BarChart3, label: "Avg. Similarity", value: `${avgSimilarity}%` },
   ];
 
